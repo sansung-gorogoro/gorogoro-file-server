@@ -1,0 +1,11 @@
+@host = http://localhost:8080
+@userId = user-123
+
+POST {{host}}/api/uploads
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "originalFileName": "215926exam1234561111_small.mp4",
+  "declaredTotalSize": 12345678
+}
