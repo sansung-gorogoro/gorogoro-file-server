@@ -1,6 +1,10 @@
 spring:
   servlet:
     multipart:
-      max-file-size: 480MB
-      max-request-size: 500MB
+      max-file-size: ${SPRING_MULTIPART_MAX_FILE_SIZE:480MB}
+      max-request-size: ${SPRING_MULTIPART_MAX_REQUEST_SIZE:500MB}
 
+upload:
+  temp-base-dir: ${UPLOAD_TEMP_BASE_DIR:files/temp-uploads}
+  session-ttl-hours: ${UPLOAD_SESSION_TTL_HOURS:24}
+  chunk-max-size-bytes: ${UPLOAD_CHUNK_MAX_SIZE_BYTES:5242880}
