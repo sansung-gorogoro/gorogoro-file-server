@@ -3,7 +3,7 @@ package com.sansung_gorogoro.file_server.application.usecase;
 import com.sansung_gorogoro.file_server.application.result.StartUploadResult;
 import com.sansung_gorogoro.file_server.domain.UploadSession;
 import com.sansung_gorogoro.file_server.domain.UploadSessionRepository;
-import com.sansung_gorogoro.file_server.infrastructure.config.UploadProperties;
+import com.sansung_gorogoro.file_server.infrastructure.config.UploadPolicyProperties;
 import com.sansung_gorogoro.file_server.presentation.request.StartUploadRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class StartUploadUseCase {
 
     private final UploadSessionRepository sessionRepository;
-    private final UploadProperties props;
+    private final UploadPolicyProperties props;
 
     private static final String TEMP_PREFIX = "tmp-";
     private static final String TEMP_EXT = ".part";
@@ -35,7 +35,7 @@ public class StartUploadUseCase {
 
         String uploadId = UUID.randomUUID().toString();
 
-        Path baseDir = Path.of(props.temp().baseDir());
+        Path baseDir = Path.of(props.tempBaseDir());
         try {
             Files.createDirectories(baseDir);
         } catch (IOException e) {
@@ -44,12 +44,12 @@ public class StartUploadUseCase {
 
         Path tempFilePath = baseDir.resolve(TEMP_PREFIX + uploadId + TEMP_EXT);
 
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(props.session().ttlHours());
+        LocalDateTime expiresAt = LocalDateTime.now().plusHours(props.sessionTtlHours());
 
         UploadSession session = UploadSession.start(uploadId, ownerUserId, declaredTotalSize, originalFileName, tempFilePath.toString(), expiresAt);
 
         sessionRepository.save(session);
 
-        return StartUploadResult.from(session, props.chunk().maxSizeBytes());
+        return StartUploadResult.from(session, props.chunkMaxSizeBytes());
     }
 }
