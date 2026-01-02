@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,14 +26,12 @@ public class StartUploadUseCase {
             throw new IllegalArgumentException("ownerUserId는 필수입니다. ");
         }
 
-        String uploadId = UUID.randomUUID().toString();
-        String tempFilePath = tempUploadFileProvider.allocate(uploadId).toString();
         LocalDateTime expiresAt = expiryProvider.calculateExpiresAt();
 
-        UploadSession session = UploadSession.start(uploadId, ownerUserId, req.declaredTotalSize(), req.originalFileName(), tempFilePath, expiresAt);
-
+        UploadSession session = UploadSession.start(ownerUserId, req.declaredTotalSize(), req.originalFileName(), expiresAt);
         sessionRepository.save(session);
 
+        tempUploadFileProvider.resolveTempFilePath(session.getId());
         return StartUploadResult.from(session, props.chunkMaxSizeBytes());
     }
 }

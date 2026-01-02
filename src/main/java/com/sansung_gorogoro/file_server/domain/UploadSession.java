@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -23,8 +25,8 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class UploadSession {
     @Id
-    @Column(name = "upload_id", length = 36, nullable = false, updatable = false)
-    private String uploadId; // UUID string
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "declared_total_size", nullable = false)
     private Long declaredTotalSize;
@@ -34,9 +36,6 @@ public class UploadSession {
 
     @Column(name = "next_offset", nullable = false)
     private Long nextOffset;
-
-    @Column(name = "temp_file_path", nullable = false, length = 500)
-    private String tempFilePath;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -56,23 +55,19 @@ public class UploadSession {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    protected UploadSession (String uploadId, Long ownerUserId, Long declaredTotalSize, String originalFileName, String tempFilePath, LocalDateTime expiresAt){
-        this.uploadId = uploadId;
+    protected UploadSession (Long ownerUserId, Long declaredTotalSize, String originalFileName, LocalDateTime expiresAt){
         this.ownerUserId = ownerUserId;
         this.declaredTotalSize = declaredTotalSize;
         this.originalFileName = originalFileName;
         this.status = UploadSessionStatus.UPLOADING;
-        this.tempFilePath = tempFilePath;
         this.nextOffset = 0L;
         this.expiresAt = expiresAt;
     }
 
-    public static UploadSession start(String uploadId,
-                                      Long ownerUserId,
+    public static UploadSession start(Long ownerUserId,
                                       Long declaredTotalSize,
                                       String originalFileName,
-                                      String tempFilePath,
                                       LocalDateTime expiresAt) {
-        return new UploadSession(uploadId, ownerUserId, declaredTotalSize, originalFileName, tempFilePath, expiresAt);
+        return new UploadSession(ownerUserId, declaredTotalSize, originalFileName, expiresAt);
     }
 }

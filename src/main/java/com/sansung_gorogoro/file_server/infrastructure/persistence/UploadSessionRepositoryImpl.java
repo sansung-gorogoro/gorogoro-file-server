@@ -13,8 +13,8 @@ public class UploadSessionRepositoryImpl implements UploadSessionRepository {
     private final UploadSessionJpaRepository jpaRepository;
 
     @Override
-    public Optional<UploadSession> findById(String uploadId) {
-        return jpaRepository.findById(uploadId);
+    public Optional<UploadSession> findById(Long id) {
+        return jpaRepository.findById(id);
     }
 
     @Override

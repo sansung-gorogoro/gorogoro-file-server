@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record StartUploadResult(
-        String uploadId,
+        Long sessionId,
         Long declaredTotalSize,
         Long nextOffset,
         Long maxChunkSize
@@ -13,7 +13,7 @@ public record StartUploadResult(
     public static StartUploadResult from (UploadSession session, Long maxChunkSize
     ) {
         return StartUploadResult.builder()
-                .uploadId(session.getUploadId())
+                .sessionId(session.getId())
                 .declaredTotalSize(session.getDeclaredTotalSize())
                 .nextOffset(session.getNextOffset())
                 .maxChunkSize(maxChunkSize)

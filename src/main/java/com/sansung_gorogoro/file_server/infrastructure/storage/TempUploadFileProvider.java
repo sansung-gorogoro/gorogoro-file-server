@@ -17,11 +17,11 @@ public class TempUploadFileProvider {
 
     private final UploadPolicyProperties props;
 
-    public Path allocate(String uploadId) {
+    public Path resolveTempFilePath(Long sessionId) {
         Path baseDir = Path.of(props.tempBaseDir());
         ensureDirectoryExists(baseDir);
 
-        return baseDir.resolve(TEMP_PREFIX + uploadId + TEMP_FILE_EXT);
+        return baseDir.resolve(TEMP_PREFIX + sessionId + TEMP_FILE_EXT);
     }
 
     private void ensureDirectoryExists(Path baseDir) {

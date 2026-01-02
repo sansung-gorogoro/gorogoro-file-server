@@ -3,7 +3,7 @@ package com.sansung_gorogoro.file_server.domain;
 import java.util.Optional;
 
 public interface UploadSessionRepository {
-    Optional<UploadSession> findById(String uploadId);
+    Optional<UploadSession> findById(Long id);
 
-    Object save(UploadSession session);
+    UploadSession save(UploadSession session);
 }
