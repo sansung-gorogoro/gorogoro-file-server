@@ -45,8 +45,8 @@ public class UploadSession {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
-    @Column(name = "owner_user_id", nullable = false, length = 100)
-    private String ownerUserId; // from X-User-Id (gateway)
+    @Column(name = "owner_user_id", nullable = false)
+    private Long ownerUserId; // from X-User-Id (gateway)
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -56,7 +56,7 @@ public class UploadSession {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    protected UploadSession (String uploadId, String ownerUserId, Long declaredTotalSize, String originalFileName, String tempFilePath, LocalDateTime expiresAt){
+    protected UploadSession (String uploadId, Long ownerUserId, Long declaredTotalSize, String originalFileName, String tempFilePath, LocalDateTime expiresAt){
         this.uploadId = uploadId;
         this.ownerUserId = ownerUserId;
         this.declaredTotalSize = declaredTotalSize;
@@ -68,7 +68,7 @@ public class UploadSession {
     }
 
     public static UploadSession start(String uploadId,
-                                      String ownerUserId,
+                                      Long ownerUserId,
                                       Long declaredTotalSize,
                                       String originalFileName,
                                       String tempFilePath,

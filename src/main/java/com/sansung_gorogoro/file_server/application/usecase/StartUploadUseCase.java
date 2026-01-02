@@ -22,13 +22,13 @@ public class StartUploadUseCase {
     private final TempUploadFileProvider tempUploadFileProvider;
     private final UploadPolicyProperties props;
 
-    public StartUploadResult create(StartUploadRequest req, String ownerUserId) {
-        if (ownerUserId == null || ownerUserId.isBlank()) {
+    public StartUploadResult create(StartUploadRequest req, Long ownerUserId) {
+        if (ownerUserId == null) {
             throw new IllegalArgumentException("ownerUserId는 필수입니다. ");
         }
 
         String uploadId = UUID.randomUUID().toString();
-        String tempFilePath = tempUploadFileProvider.allocate(ownerUserId).toString();
+        String tempFilePath = tempUploadFileProvider.allocate(uploadId).toString();
         LocalDateTime expiresAt = expiryProvider.calculateExpiresAt();
 
         UploadSession session = UploadSession.start(uploadId, ownerUserId, req.declaredTotalSize(), req.originalFileName(), tempFilePath, expiresAt);
