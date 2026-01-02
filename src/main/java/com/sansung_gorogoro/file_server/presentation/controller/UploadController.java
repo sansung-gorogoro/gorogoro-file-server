@@ -17,8 +17,8 @@ public class UploadController {
     private final StartUploadUseCase startUploadUseCase;
 
     @PostMapping("/uploads")
-    public ResponseEntity<?> create (@Valid @RequestBody StartUploadRequest req,
-                                     @RequestHeader("X-User-Id") String ownerUserId) {
+    public ResponseEntity<?> create (@RequestHeader("X-User-Id") String ownerUserId,
+                                     @RequestBody @Valid StartUploadRequest req) {
 
         StartUploadResult result = startUploadUseCase.create(req, ownerUserId);
         StartUploadResponse response = StartUploadResponse.from(result);
