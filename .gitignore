@@ -5,6 +5,9 @@ build/
 **/build/
 !gradle/wrapper/gradle-wrapper.jar
 
+# IntelliJ HTTP Client files
+http/files/*.http
+
 ### IntelliJ IDEA ###
 .idea/
 *.iml
