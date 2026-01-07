@@ -1,5 +1,7 @@
 package com.sansung_gorogoro.file_server.domain;
 
+import com.sansung_gorogoro.file_server.common.error.code.FileErrorCode;
+import com.sansung_gorogoro.file_server.common.validate.Validators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -19,6 +21,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static com.sansung_gorogoro.file_server.domain.constants.UploadConstraints.ORIGINAL_FILE_NAME_MAX_LEN;
+
 @Getter
 @Entity
 @Table(name = "upload_session")
@@ -32,7 +36,7 @@ public class UploadSession {
     @Column(name = "declared_total_size", nullable = false)
     private Long declaredTotalSize;
 
-    @Column(name = "original_file_name", nullable = false, length = 255)
+    @Column(name = "original_file_name", nullable = false, length = ORIGINAL_FILE_NAME_MAX_LEN)
     private String originalFileName;
 
     @Column(name = "next_offset", nullable = false)
@@ -57,9 +61,22 @@ public class UploadSession {
     private LocalDateTime updatedAt;
 
     protected UploadSession (Long ownerUserId, Long declaredTotalSize, String originalFileName, LocalDateTime expiresAt){
-        this.ownerUserId = requirePositive(ownerUserId, "ownerUserId");
-        this.declaredTotalSize = requirePositive(declaredTotalSize, "declaredTotalSize");
-        this.originalFileName = validateOriginalFileName(originalFileName);
+        this.ownerUserId = Validators.requirePositive(
+                ownerUserId,
+                FileErrorCode.OWNER_USER_ID_REQUIRED,
+                FileErrorCode.OWNER_USER_ID_MUST_MORE_THAN_ZERO);
+        this.declaredTotalSize = Validators.requirePositive(
+                declaredTotalSize,
+                FileErrorCode.DECLARED_TOTAL_SIZE_REQUIRED,
+                FileErrorCode.DECLARED_TOTAL_SIZE_MUST_MORE_THAN_ZERO);
+
+        this.originalFileName = Validators.validateString(
+                originalFileName,
+                ORIGINAL_FILE_NAME_MAX_LEN,
+                FileErrorCode.ORIGINAL_FILE_NAME_REQUIRED,
+                FileErrorCode.ORIGINAL_FILE_NAME_TOO_LONG
+        );
+
         this.status = UploadSessionStatus.UPLOADING;
         this.nextOffset = 0L;
         this.expiresAt = Objects.requireNonNull(expiresAt, "expiresAt은 필수입니다");
@@ -70,21 +87,5 @@ public class UploadSession {
                                       String originalFileName,
                                       LocalDateTime expiresAt) {
         return new UploadSession(ownerUserId, declaredTotalSize, originalFileName, expiresAt);
-    }
-
-    private static Long requirePositive(Long value, String fieldName) {
-        if (value == null) throw new IllegalArgumentException(fieldName + "는 필수입니다.");
-        if (value <= 0) throw new IllegalArgumentException(fieldName + "는 0보다 커야 합니다.");
-        return value;
-    }
-
-    private static String validateOriginalFileName(String originalFileName) {
-        if (originalFileName == null || originalFileName.isBlank()) {
-            throw new IllegalArgumentException("originalFileName은 필수입니다.");
-        }
-        if (originalFileName.length() > 255) {
-            throw new IllegalArgumentException("originalFileName은 255자를 초과할 수 없습니다.");
-        }
-        return originalFileName;
     }
 }

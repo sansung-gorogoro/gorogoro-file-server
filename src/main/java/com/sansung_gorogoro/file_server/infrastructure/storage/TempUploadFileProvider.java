@@ -1,5 +1,7 @@
 package com.sansung_gorogoro.file_server.infrastructure.storage;
 
+import com.sansung_gorogoro.file_server.common.error.code.FileErrorCode;
+import com.sansung_gorogoro.file_server.common.exception.BusinessException;
 import com.sansung_gorogoro.file_server.infrastructure.config.UploadPolicyProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -28,7 +30,9 @@ public class TempUploadFileProvider {
         try {
             Files.createDirectories(baseDir);
         } catch (IOException e) {
-            throw new IllegalStateException("임시 업로드 디렉터리를 생성할 수 없습니다: " + baseDir, e);
+            throw BusinessException.builder(FileErrorCode.UPLOAD_TEMP_DIR_CREATE_FAILED)
+                    .withCause(e)
+                    .build();
         }
     }
 }
