@@ -22,10 +22,6 @@ public class StartUploadUseCase {
     private final UploadPolicyProperties props;
 
     public StartUploadResult create(StartUploadRequest req, Long ownerUserId) {
-        if (ownerUserId == null) {
-            throw new IllegalArgumentException("ownerUserId는 필수입니다. ");
-        }
-
         LocalDateTime expiresAt = expiryProvider.calculateExpiresAt();
 
         UploadSession session = UploadSession.start(ownerUserId, req.declaredTotalSize(), req.originalFileName(), expiresAt);
