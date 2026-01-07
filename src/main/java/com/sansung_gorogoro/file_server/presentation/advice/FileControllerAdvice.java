@@ -180,6 +180,14 @@ public class FileControllerAdvice {
     @ResponseBody
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<BusinessErrorCode> handleNotReadable(HttpMessageNotReadableException ex) {
+        Throwable root = ex.getRootCause();
+        log.debug("[NOT_READABLE] exType={}, rootType={}, rootMsg={}",
+                ex.getClass().getName(),
+                root != null ? root.getClass().getName() : "null",
+                root != null ? root.getMessage() : "null",
+                ex
+        );
+
         FileErrorCode ec = FileErrorCode.REQUEST_BINDING_FAILED;
         return ResponseEntity.status(ec.getHttpStatus())
                 .body(new BusinessErrorCode(ec.getCode(), ec.getMessage()));
