@@ -79,7 +79,7 @@ public class UploadSession {
 
         this.status = UploadSessionStatus.UPLOADING;
         this.nextOffset = 0L;
-        this.expiresAt = Objects.requireNonNull(expiresAt, "expiresAt은 필수입니다");
+        this.expiresAt = Objects.requireNonNull(expiresAt, FileErrorCode.EXPIRES_AT_REQUIRED.getMessage());
     }
 
     public static UploadSession start(Long ownerUserId,

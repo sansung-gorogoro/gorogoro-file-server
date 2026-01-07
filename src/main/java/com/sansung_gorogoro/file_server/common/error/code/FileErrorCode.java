@@ -34,7 +34,8 @@ public enum FileErrorCode implements ErrorCode {
     DECLARED_TOTAL_SIZE_REQUIRED(HttpStatus.BAD_REQUEST, "FS-022", "업로드 파일 크기는 필수입니다."),
     DECLARED_TOTAL_SIZE_MUST_MORE_THAN_ZERO(HttpStatus.BAD_REQUEST, "FS-023", "업로드 파일 크기는 0보다 커야 합니다."),
     ORIGINAL_FILE_NAME_REQUIRED(HttpStatus.BAD_REQUEST, "FS-025", "원본 파일명은 필수입니다."),
-    ORIGINAL_FILE_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "FS-026", "원본 파일명은 255자를 초과할 수 없습니다.");
+    ORIGINAL_FILE_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "FS-026", "원본 파일명은 255자를 초과할 수 없습니다."),
+    EXPIRES_AT_REQUIRED(HttpStatus.BAD_REQUEST, "FS-027", "만료시간은 필수입니다.")
     ;
     private final HttpStatus httpStatus;
     private final String code;
