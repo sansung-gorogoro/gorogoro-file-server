@@ -1,5 +1,6 @@
 package com.sansung_gorogoro.file_server.application.usecase;
 
+import com.sansung_gorogoro.file_server.application.policy.UploadPolicyProvider;
 import com.sansung_gorogoro.file_server.application.policy.UploadSessionExpiryProvider;
 import com.sansung_gorogoro.file_server.application.result.StartUploadResult;
 import com.sansung_gorogoro.file_server.domain.UploadSession;
@@ -18,12 +19,14 @@ public class StartUploadUseCase {
 
     private final UploadSessionRepository sessionRepository;
     private final UploadSessionExpiryProvider expiryProvider;
+    private final UploadPolicyProvider uploadPolicyProvider;
     private final TempUploadFileProvider tempUploadFileProvider;
     private final UploadPolicyProperties props;
 
+
     public StartUploadResult create(StartUploadRequest req, Long ownerUserId) {
         LocalDateTime expiresAt = expiryProvider.calculateExpiresAt();
-
+        uploadPolicyProvider.allowedExtensions(req.originalFileName());
         UploadSession session = UploadSession.start(ownerUserId, req.declaredTotalSize(), req.originalFileName(), expiresAt);
         sessionRepository.save(session);
 
