@@ -1,8 +1,30 @@
 spring:
+  profiles:
+    active: local
   servlet:
     multipart:
       max-file-size: ${SPRING_MULTIPART_MAX_FILE_SIZE:480MB}
       max-request-size: ${SPRING_MULTIPART_MAX_REQUEST_SIZE:500MB}
+
+  rabbitmq:
+    host: ${SANSEONG_IP}
+    port: 5672
+    username: ${RABBIT_MQ_USERNAME}
+    password: ${RABBIT_MQ_PASSWORD}
+    virtual-host: ${RABBIT_MQ_VIRTUAL_HOST}
+
+rabbit:
+  events:
+    exchange: course.event.v1
+    queues:
+      course-deleted:
+        name: file.cleanup.course-deleted.queue
+        bindings:
+          - course.deleted
+  dlq:
+    dlx: course.dlx.v1
+    name: course.deleted.dead
+    routing: course.deleted.dead
 
 upload:
   temp-base-dir: ${UPLOAD_TEMP_BASE_DIR:files/temp-uploads}
