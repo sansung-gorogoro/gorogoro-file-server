@@ -25,14 +25,39 @@ public class FileRabbitEventSubscriber {
             Channel channel
     ) throws IOException {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
+
         try {
-            log.info("consume only: courseId={}", envelope.getPayload().courseId());
+            if (envelope == null) {
+                log.warn("File Service consume: envelope is null. rk={} - nacking(requeue=false)",
+                        message.getMessageProperties().getReceivedRoutingKey());
+                channel.basicNack(deliveryTag, false, false);
+                return;
+            }
+
+            CourseDeletedEvent payload = envelope.getPayload();
+
+            if (payload == null || payload.lessonId() == null) {
+                log.warn("File Service consume: invalid message (payload or lessonId is null). rk={} messageId={} traceId={} - nacking(requeue=false)",
+                        message.getMessageProperties().getReceivedRoutingKey(),
+                        envelope.getMetadata() != null ? envelope.getMetadata().getMessageId() : "n/a",
+                        envelope.getMetadata() != null ? envelope.getMetadata().getTraceId() : "n/a"
+                );
+                channel.basicNack(deliveryTag, false, false);
+                return;
+            }
+
+            log.info("File Service consume: rk={} messageId={} traceId={} lessonId={}",
+                    message.getMessageProperties().getReceivedRoutingKey(),
+                    envelope.getMetadata() != null ? envelope.getMetadata().getMessageId() : "n/a",
+                    envelope.getMetadata() != null ? envelope.getMetadata().getTraceId() : "n/a",
+                    payload.lessonId()
+            );
+
+            log.debug("Received CourseDeletedEvent payload={}", payload);
             channel.basicAck(deliveryTag, false);
         } catch (Exception e) {
-            log.error("Review Service handler error: {}", e.getMessage(), e);
+            log.error("File Service handler error: {}", e.getMessage(), e);
             channel.basicNack(deliveryTag, false, false);
         }
-        // TODO: 후속 이슈에서 cleanup usecase 연결
-        log.info("Received CourseDeletedEvent: {}", event);
     }
 }
