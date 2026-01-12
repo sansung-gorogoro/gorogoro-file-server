@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: local
   servlet:
     multipart:
       max-file-size: ${SPRING_MULTIPART_MAX_FILE_SIZE:480MB}
@@ -19,6 +21,10 @@ rabbit:
         name: file.cleanup.course-deleted.queue
         bindings:
           - course.deleted
+  dlq:
+    dlx: course.dlx.v1
+    name: course.deleted.dead
+    routing: course.deleted.dead
 
 upload:
   temp-base-dir: ${UPLOAD_TEMP_BASE_DIR:files/temp-uploads}
