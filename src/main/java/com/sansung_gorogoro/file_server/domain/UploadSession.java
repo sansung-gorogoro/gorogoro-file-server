@@ -1,6 +1,7 @@
 package com.sansung_gorogoro.file_server.domain;
 
 import com.sansung_gorogoro.file_server.common.error.code.FileErrorCode;
+import com.sansung_gorogoro.file_server.common.exception.BusinessException;
 import com.sansung_gorogoro.file_server.common.validate.Validators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -87,5 +88,42 @@ public class UploadSession {
                                       String originalFileName,
                                       LocalDateTime expiresAt) {
         return new UploadSession(ownerUserId, declaredTotalSize, originalFileName, expiresAt);
+    }
+
+    public void assertExpectedOffset(Long uploadOffset) {
+        if (!uploadOffset.equals(this.nextOffset)) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_SESSION_OFFSET_MISMATCH).build();
+        }
+    }
+
+    public void assertOwner(Long requesterUserId) {
+        if (requesterUserId == null) {
+            throw BusinessException.builder(FileErrorCode.OWNER_USER_ID_REQUIRED).build();
+        }
+
+        if (!Objects.equals(this.ownerUserId, requesterUserId)) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_SESSION_ACCESS_FORBIDDEN).build();
+        }
+    }
+
+    public void applyChunkWritten(long written) {
+        if (!status.equals(UploadSessionStatus.UPLOADING)) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_SESSION_STATUS_NOT_ACTIVE).build();
+        }
+
+        if (written <= 0) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_CHUNK_WRITE_FAILED).build();
+        }
+
+        Long newNextOffset = this.nextOffset + written;
+        if (newNextOffset > this.declaredTotalSize) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_OFFSET_EXCEEDS_DECLARED_TOTAL_SIZE).build();
+        }
+
+        advanceTo(newNextOffset);
+    }
+
+    private void advanceTo(Long newNextOffset) {
+        this.nextOffset = newNextOffset;
     }
 }
