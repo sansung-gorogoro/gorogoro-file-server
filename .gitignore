@@ -8,6 +8,16 @@ build/
 # IntelliJ HTTP Client files
 http/files/*.http
 
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
 ### IntelliJ IDEA ###
 .idea/
 *.iml
