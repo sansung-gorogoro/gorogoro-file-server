@@ -31,6 +31,7 @@ public class ChunkUploadUseCase {
 
         session.assertOwner(ownerUserId);
         validateChunkSize(contentLength);
+        validateChunkWithinRemainingBytes(contentLength, session.getDeclaredTotalSize(), uploadOffset);
         session.assertExpectedOffset(uploadOffset);
         String tempFilePath = tempUploadFileProvider.resolveTempFilePath(session.getId()).toString();
 
@@ -48,6 +49,13 @@ public class ChunkUploadUseCase {
 
         if (contentLength == 0) {
             throw BusinessException.builder(FileErrorCode.UPLOAD_CHUNK_EMPTY).build();
+        }
+    }
+
+    private void validateChunkWithinRemainingBytes(Long contentLength, Long declaredTotalSize, Long uploadOffset) {
+        Long remaining = declaredTotalSize - uploadOffset;
+        if (contentLength > remaining) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_CHUNK_EXCEEDS_REMAINING).build();
         }
     }
 }
