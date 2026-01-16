@@ -24,6 +24,8 @@ bin/
 *.iws
 *.ipr
 out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
 ### VS Code ###
 .vscode/
@@ -35,3 +37,10 @@ Thumbs.db
 ### Logs ###
 *.log
 src/main/resources/application-local.yml
+
+# local storage outputs
+/files/
+*.part
+
+### http client artifacts / test binaries ###
+http/**/testdata/
