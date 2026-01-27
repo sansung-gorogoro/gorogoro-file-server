@@ -38,10 +38,21 @@ public enum FileErrorCode implements ErrorCode {
     EXPIRES_AT_REQUIRED(HttpStatus.BAD_REQUEST, "FS-027", "만료시간은 필수입니다."),
     ORIGINAL_FILE_NAME_EXTENSION_NOT_FOUND(HttpStatus.BAD_REQUEST, "FS-028", "확장자를 찾지 못했습니다."),
     ORIGINAL_FILE_NAME_EXTENSION_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "FS-029", "지원하는 확장자가 아닙니다."),
+    UPLOAD_NOT_COMPLETED(HttpStatus.CONFLICT, "FS-030", "업로드가 완료되지 않았습니다."),
+    LESSON_ID_REQUIRED(HttpStatus.BAD_REQUEST, "FS-031", "강의 아이디는 필수입니다."),
+    LESSON_ID_MUST_MORE_THAN_ZERO(HttpStatus.BAD_REQUEST, "FS-032", "강의 아이디는 0보다 커야 합니다."),
+    FILE_KEY_REQUIRED(HttpStatus.BAD_REQUEST, "FS-033", "파일 키는 필수입니다."),
+    FILE_KEY_TOO_LONG(HttpStatus.BAD_REQUEST, "FS-034", "파일 키 길이가 허용 범위를 초과했습니다."),
+    RESOURCE_TYPE_RESOLVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FS-035", "리소스 타입을 결정할 수 없습니다."),
 
     // ===================== Internal / Infra =====================
-    UPLOAD_TEMP_DIR_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FS-020", "파일 저장소 초기화에 실패했습니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FS-999", "서버 내부 오류가 발생했습니다.");
+    UPLOAD_TEMP_DIR_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FS-060", "파일 저장소 초기화에 실패했습니다."),
+    FILE_CONFIRM_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FS-061", "파일 확정(이동) 처리에 실패했습니다."),
+    INVALID_FILE_KEY(HttpStatus.BAD_REQUEST, "FS-062", "유효하지 않은 파일 경로 키입니다."),
+    UPLOAD_TEMP_FILE_NOT_FOUND(HttpStatus.CONFLICT, "FS-063", "업로드 임시 파일을 찾을 수 없습니다."),
+    FILE_CHECKSUM_CALCULATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FS-064", "파일 체크섬(SHA-256) 계산에 실패했습니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FS-999", "서버 내부 오류가 발생했습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

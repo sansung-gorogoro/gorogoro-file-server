@@ -2,10 +2,12 @@ package com.sansung_gorogoro.file_server.domain;
 
 import com.sansung_gorogoro.file_server.common.error.code.FileErrorCode;
 import com.sansung_gorogoro.file_server.common.exception.BusinessException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
+@Getter
 @RequiredArgsConstructor
 public enum ExtensionType {
     MP4("mp4", ResourceType.VIDEO);
@@ -28,5 +30,9 @@ public enum ExtensionType {
             throw BusinessException.builder(FileErrorCode.ORIGINAL_FILE_NAME_EXTENSION_NOT_FOUND).build();
         }
         return originalFileName.substring(idx+1).trim().toLowerCase();
+    }
+
+    public static ResourceType toResourceType(String originalFileName) {
+        return fromOriginalFileName(originalFileName).getResourceType();
     }
 }

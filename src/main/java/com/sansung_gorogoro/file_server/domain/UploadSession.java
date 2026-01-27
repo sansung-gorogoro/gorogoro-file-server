@@ -106,10 +106,32 @@ public class UploadSession {
         }
     }
 
-    public void applyChunkWritten(long written) {
-        if (!status.equals(UploadSessionStatus.UPLOADING)) {
-            throw BusinessException.builder(FileErrorCode.UPLOAD_SESSION_STATUS_NOT_ACTIVE).build();
+    public void assertNotExpired() {
+        LocalDateTime now = LocalDateTime.now();
+        if (!now.isBefore(expiresAt)) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_SESSION_EXPIRED).build();
         }
+    }
+
+    public void assertFullyUploaded() {
+        if (!Objects.equals(nextOffset, declaredTotalSize)) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_NOT_COMPLETED).build();
+        }
+    }
+
+    public void assertSizeMatches(long actualSize) {
+        if (!Objects.equals(actualSize, this.declaredTotalSize)) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_NOT_COMPLETED).build();
+        }
+    }
+
+    public void markCompleted() {
+        assertUploading();
+        this.status = UploadSessionStatus.COMPLETED;
+    }
+
+    public void applyChunkWritten(long written) {
+        assertUploading();
 
         if (written <= 0) {
             throw BusinessException.builder(FileErrorCode.UPLOAD_CHUNK_WRITE_FAILED).build();
@@ -121,6 +143,12 @@ public class UploadSession {
         }
 
         advanceTo(newNextOffset);
+    }
+
+    public void assertUploading() {
+        if (!status.equals(UploadSessionStatus.UPLOADING)) {
+            throw BusinessException.builder(FileErrorCode.UPLOAD_SESSION_STATUS_NOT_ACTIVE).build();
+        }
     }
 
     private void advanceTo(Long newNextOffset) {
