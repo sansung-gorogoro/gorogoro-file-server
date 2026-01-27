@@ -9,12 +9,14 @@ import com.sansung_gorogoro.file_server.infrastructure.config.UploadPolicyProper
 import com.sansung_gorogoro.file_server.infrastructure.storage.ChunkFileWriter;
 import com.sansung_gorogoro.file_server.infrastructure.storage.TempUploadFileProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChunkUploadUseCase {
@@ -54,7 +56,17 @@ public class ChunkUploadUseCase {
 
     private void validateChunkWithinRemainingBytes(Long contentLength, Long declaredTotalSize, Long uploadOffset) {
         Long remaining = declaredTotalSize - uploadOffset;
+
+        /**
+         * (디버그용) 수동 HTTP/CLI 테스트에서 마지막 청크 크기/offset을 맞추기 어려워서,
+         * 서버가 계산한 remaining(= declaredTotalSize - uploadOffset)과 요청 contentLength를 로그로 남긴다.
+         * → 어떤 값이 초과했는지(현재 offset, 청크 크기, 총 크기, 남은 용량)를 즉시 확인해
+         * 마지막 청크를 remaining만큼으로 조정(dd/split 등)할 때 참고하기 위한 로그.
+         */
         if (contentLength > remaining) {
+            log.warn("FS-011 debug: offset={}, contentLength={}, total={}, remaining={}",
+                    uploadOffset, contentLength, declaredTotalSize, declaredTotalSize - uploadOffset);
+
             throw BusinessException.builder(FileErrorCode.UPLOAD_CHUNK_EXCEEDS_REMAINING).build();
         }
     }
