@@ -28,5 +28,6 @@ rabbit:
 
 upload:
   temp-base-dir: ${UPLOAD_TEMP_BASE_DIR:files/temp-uploads}
+  file-base-dir: ${UPLOAD_FILE_BASE_DIR:files/uploads}
   session-ttl-hours: ${UPLOAD_SESSION_TTL_HOURS:24}
   chunk-max-size-bytes: ${UPLOAD_CHUNK_MAX_SIZE_BYTES:5242880}
