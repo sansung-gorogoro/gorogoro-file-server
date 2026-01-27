@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record UploadPolicyProperties(
         @NotBlank
         String tempBaseDir,
+        @NotBlank
+        String fileBaseDir,
         @Positive
         long sessionTtlHours,
         @Positive
